@@ -1,7 +1,7 @@
-# Vue2 Starter
-### _by [Thomas Boulongne](http://thomasboulongne.com)_
+# Cushy's app
+### _by [Sofia Boggio](http://www.sofiaboggio.fr/), [Thomas Boulongne](https://thomasboulongne.com), [Jacky Fong](https://jackyfong.fr), [Léna Pinot](http://lenapinot.fr), [Léo Ternoir](http://leoternoir.com)_
 
-## _VueJS 2.0 starter, Webpack, ES6, VueLoader_
+## _The companion app of Cushy, your not so average cushion_
 
 ### Install
 
