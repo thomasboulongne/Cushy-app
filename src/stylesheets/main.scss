@@ -1,0 +1,14 @@
+@import './variables.scss';
+@import './fonts';
+
+body {
+	background-color: white;
+	font-size: 16px;
+	font-family: 'Arial';
+	color: $main-color;
+}
+
+a {
+	color: $main-color;
+	text-decoration: none;
+}
