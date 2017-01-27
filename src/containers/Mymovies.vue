@@ -37,7 +37,7 @@ export default {
 		.then( response => {
 			this.movies = response.data.movies;
 			this.genres = response.data.genres;
-			this.initSlides();
+			setTimeout(this.initSlides, 200);
 		});
 	},
 
@@ -49,15 +49,8 @@ export default {
 			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
 				const elt = this.$refs.list.childNodes[i];
 
-				TweenLite.set(elt, {x: (-50 + i * 75) + '%', y: '-50%'});
+				TweenLite.set(elt, {x: (-50 + i * 10) + '%', y: '-50%'});
 
-				this.slides.push({
-					elt: elt,
-					position: {
-						x: elt.offsetLeft,
-						y: elt.offsetTop,
-					}
-				})
 			}
 		},
 		onTouchStart(e) {
@@ -69,8 +62,19 @@ export default {
 			};
 
 			this.isScrolling = undefined;
-			
+
 			this.slides = [];
+			
+			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
+				const elt = this.$refs.list.childNodes[i];
+				this.slides.push({
+					elt: elt,
+					position: {
+						x: elt._gsTransform.x,
+						y: elt._gsTransform.yPercent,
+					}
+				});
+			}
 
 			this.delta = {};
 		},
@@ -89,11 +93,10 @@ export default {
 				this.isScrolling = !!(this.isScrolling || Math.abs(this.delta.x) < Math.abs(this.delta.y));
 			}
 
-			console.log(this.delta)
 			if (!this.isScrolling && this.touchOffset) {
 				e.preventDefault();
 				for (let i = 0; i < this.slides.length; i++) {
-					TweenLite.set(this.slides[i], {x: '' + this.delta.x});
+					TweenLite.to(this.slides[i].elt, 1, {x: this.slides[i].position.x + this.delta.x});
 				}
 			}
 
@@ -130,6 +133,7 @@ export default {
 		ul {
 			position: relative;
 			width: 100%;
+			height: 100%;
 			li {
 				position: absolute;
 				top: 50%;
