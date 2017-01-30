@@ -3,7 +3,7 @@
 		<h2>
 			<span v-for="genre in genres">{{ genre }}</span>
 		</h2>
-		<br>
+		<h3>{{ pagination }}/{{ movies.length }}</h3>
 		<ul v-if="movies.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
 			<li v-for="movie in movies">
 				<img :src="movie.backdropImage" alt="">
@@ -28,12 +28,20 @@ export default {
 			id: Cookie.get('cushy-id'),
 			movies: [],
 			genres: [],
-			slides: []
+			slides: [],
+			pagination: 1,
+			downscale: .8
 		};
 	},
 
+	computed: {
+		paginationIndex() {
+			return this.pagination - 1;
+		}
+	},
+
 	created() {
-		Axios.get('http://localhost:3637/app/' + this.id)
+		Axios.get('http://172.18.34.14:3637/app/' + this.id)
 		.then( response => {
 			this.movies = response.data.movies;
 			this.genres = response.data.genres;
@@ -42,16 +50,30 @@ export default {
 	},
 
 	mounted() {
+		this.slideWidth = window.innerWidth * .68;
 	},
 
 	methods: {
 		initSlides() {
+			this.slides = [];
 			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
 				const elt = this.$refs.list.childNodes[i];
 
-				TweenLite.set(elt, {x: (-50 + i * 10) + '%', y: '-50%'});
+				if(i != this.paginationIndex) {
+					TweenLite.set(elt, {scale: this.downscale});
+				}				
+				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%'});
+				this.slides.push({
+					elt: elt,
+					position: {
+						x: elt._gsTransform.x,
+						y: elt._gsTransform.yPercent,
+					}
+				});
 
 			}
+
+			
 		},
 		onTouchStart(e) {
 			this.touches = e.touches ? e.touches[0] : e;
@@ -62,20 +84,6 @@ export default {
 			};
 
 			this.isScrolling = undefined;
-
-			this.slides = [];
-			
-			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
-				const elt = this.$refs.list.childNodes[i];
-				this.slides.push({
-					elt: elt,
-					position: {
-						x: elt._gsTransform.x,
-						y: elt._gsTransform.yPercent,
-					}
-				});
-			}
-
 			this.delta = {};
 		},
 
@@ -93,17 +101,79 @@ export default {
 				this.isScrolling = !!(this.isScrolling || Math.abs(this.delta.x) < Math.abs(this.delta.y));
 			}
 
-			if (!this.isScrolling && this.touchOffset) {
+			if (!this.isScrolling && this.touchOffset && Math.abs(this.delta.x) < this.slideWidth) {
 				e.preventDefault();
+
 				for (let i = 0; i < this.slides.length; i++) {
-					TweenLite.to(this.slides[i].elt, 1, {x: this.slides[i].position.x + this.delta.x});
+					TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.delta.x});
+					if(i == this.paginationIndex - 1 && this.delta.x > 0) {
+						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + Math.abs(this.delta.x) / 100 * 0.2});
+					}
+					else if(i == this.paginationIndex) {
+						TweenLite.to(this.slides[i].elt, .3, {scale: 1 - Math.abs(this.delta.x) / 100 * 0.2});
+					}
+					else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
+						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + Math.abs(this.delta.x) / 100 * 0.2});
+					}
 				}
 			}
 
 		},
 
 		onTouchEnd(e) {
-			console.log('onTouchEnd');
+
+			if (!this.isScrolling && this.touchOffset) {
+				e.preventDefault();
+				
+				const orientation = this.delta.x > 0 ? 1 : -1;
+				const newPagination = this.pagination - orientation;
+
+				let tempSlides = [];
+
+				if(Math.abs(this.delta.x) > this.slideWidth / 3 && newPagination > 0 && newPagination < this.slides.length + 1) {
+					for (let i = 0; i < this.slides.length; i++) {
+						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * orientation});
+						if(i == newPagination - 1) {
+							TweenLite.to(this.slides[i].elt, .3, {scale: 1});
+						}
+						else {
+							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+						}
+
+						tempSlides.push({
+							elt: this.slides[i].elt,
+							position: {
+								x: this.slides[i].position.x + this.slideWidth * orientation,
+								y: this.slides[i].elt._gsTransform.yPercent,
+							}
+						});
+					}
+					this.pagination = newPagination;
+				}
+				else {
+					for (let i = 0; i < this.slides.length; i++) {
+						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x});
+						if(i == this.paginationIndex - 1 && this.delta.x > 0) {
+							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+						}
+						else if(i == this.paginationIndex) {
+							TweenLite.to(this.slides[i].elt, .3, {scale: 1});
+						}
+						else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
+							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+						}
+
+						tempSlides.push({
+							elt: this.slides[i].elt,
+							position: {
+								x: this.slides[i].position.x,
+								y: this.slides[i].elt._gsTransform.yPercent,
+							}
+						});
+					}
+				}
+				this.slides = tempSlides.slice();
+			}
 		}
 	},
 
@@ -119,7 +189,9 @@ export default {
 	#my-movies {
 		overflow: hidden;
 		width: 100%;
-		height: 100%;
+		height: 90%;
+		display: flex;
+		flex-direction: column;
 		h2 {
 			display: inline-block;
 			margin: auto;
@@ -133,33 +205,17 @@ export default {
 		ul {
 			position: relative;
 			width: 100%;
-			height: 100%;
+			flex-grow: 1;
 			li {
 				position: absolute;
 				top: 50%;
 				left: 50%;
-				width: 75vw;
+				width: 68vw;
 				flex-shrink: 0;
 				img {
 					width: 100%;
 					height: 75vw;
 					object-fit: cover;
-				}
-				&:nth-child(2) {
-					left: 125%;
-					transform: scale(.8);
-				}
-				&:nth-child(3) {
-					left: 200%;
-					transform: scale(.8);
-				}
-				&:nth-child(4) {
-					left: 275%;
-					transform: scale(.8);
-				}
-				&:nth-child(5) {
-					left: 350%;
-					transform: scale(.8);
 				}
 			}
 		}
