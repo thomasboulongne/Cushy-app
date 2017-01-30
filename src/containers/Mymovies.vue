@@ -104,16 +104,18 @@ export default {
 			if (!this.isScrolling && this.touchOffset && Math.abs(this.delta.x) < this.slideWidth) {
 				e.preventDefault();
 
+				const percentage = Math.abs(this.delta.x) / (this.slideWidth/100);
+
 				for (let i = 0; i < this.slides.length; i++) {
 					TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.delta.x});
 					if(i == this.paginationIndex - 1 && this.delta.x > 0) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + Math.abs(this.delta.x) / 100 * 0.2});
+						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + ((1 - this.downscale) * percentage/100)});
 					}
 					else if(i == this.paginationIndex) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: 1 - Math.abs(this.delta.x) / 100 * 0.2});
+						TweenLite.to(this.slides[i].elt, .3, {scale: 1 - ((1 - this.downscale) * percentage/100)});
 					}
 					else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + Math.abs(this.delta.x) / 100 * 0.2});
+						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + ((1 - this.downscale) * percentage/100)});
 					}
 				}
 			}
