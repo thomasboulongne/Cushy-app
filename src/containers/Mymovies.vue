@@ -30,7 +30,10 @@ export default {
 			genres: [],
 			slides: [],
 			pagination: 1,
-			downscale: .8
+			downscale: .7,
+			yoffset: window.innerHeight * .03,
+			bluroffset: 1.2,
+			opacityoffset: .8
 		};
 	},
 
@@ -59,10 +62,12 @@ export default {
 			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
 				const elt = this.$refs.list.childNodes[i];
 
-				if(i != this.paginationIndex) {
-					TweenLite.set(elt, {scale: this.downscale});
-				}				
 				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%'});
+
+				if(i != this.paginationIndex) {
+					TweenLite.set(elt, {scale: this.downscale, opacity: this.opacityoffset, y: this.yoffset, filter: 'blur(' + this.bluroffset + 'px)'});
+				}
+
 				this.slides.push({
 					elt: elt,
 					position: {
@@ -109,13 +114,28 @@ export default {
 				for (let i = 0; i < this.slides.length; i++) {
 					TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.delta.x});
 					if(i == this.paginationIndex - 1 && this.delta.x > 0) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + ((1 - this.downscale) * percentage/100)});
+						TweenLite.to(this.slides[i].elt, .3, {
+							scale: this.downscale + ((1 - this.downscale) * percentage/100),
+							opacity: this.opacityoffset + ((1 - this.opacityoffset) * percentage/100),
+							y: this.yoffset - this.yoffset * percentage/100,
+							filter: 'blur(' + this.bluroffset - this.bluroffset * percentage/100 + 'px)'
+						});
 					}
 					else if(i == this.paginationIndex) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: 1 - ((1 - this.downscale) * percentage/100)});
+						TweenLite.to(this.slides[i].elt, .3, {
+							scale: 1 - ((1 - this.downscale) * percentage/100), 
+							opacity: 1 - ((1 - this.opacityoffset) * percentage/100), 
+							y: this.yoffset * percentage/100,
+							filter: 'blur(' + this.bluroffset * percentage/100+ 'px)'
+						});
 					}
 					else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
-						TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale + ((1 - this.downscale) * percentage/100)});
+						TweenLite.to(this.slides[i].elt, .3, {
+							scale: this.downscale + ((1 - this.downscale) * percentage/100), 
+							opacity: this.opacityoffset + ((1 - this.opacityoffset) * percentage/100), 
+							y: this.yoffset - this.yoffset * percentage/100,
+							filter: 'blur(' + this.bluroffset * percentage/100+ 'px)'
+						});
 					}
 				}
 			}
@@ -136,10 +156,20 @@ export default {
 					for (let i = 0; i < this.slides.length; i++) {
 						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * orientation});
 						if(i == newPagination - 1) {
-							TweenLite.to(this.slides[i].elt, .3, {scale: 1});
+							TweenLite.to(this.slides[i].elt, .3, {
+								scale: 1, 
+								opacity: 1, 
+								y: 0,
+								filter: 'blur(' + 0 + 'px)'
+							});
 						}
 						else {
-							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+							TweenLite.to(this.slides[i].elt, .3, {
+								scale: this.downscale, 
+								opacity: this.opacityoffset, 
+								y: this.yoffset,
+								filter: 'blur(' + this.bluroffset + 'px)'
+							});
 						}
 
 						tempSlides.push({
@@ -156,13 +186,28 @@ export default {
 					for (let i = 0; i < this.slides.length; i++) {
 						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x});
 						if(i == this.paginationIndex - 1 && this.delta.x > 0) {
-							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+							TweenLite.to(this.slides[i].elt, .3, {
+								scale: this.downscale,
+								opacity: this.opacityoffset, 
+								y: this.yoffset,
+								filter: 'blur(' + this.bluroffset + 'px)'
+							});
 						}
 						else if(i == this.paginationIndex) {
-							TweenLite.to(this.slides[i].elt, .3, {scale: 1});
+							TweenLite.to(this.slides[i].elt, .3, {
+								scale: 1,
+								opacity: 1,
+								y: 0,
+								filter: 'blur(' + 0 + 'px)'
+							});
 						}
 						else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
-							TweenLite.to(this.slides[i].elt, .3, {scale: this.downscale});
+							TweenLite.to(this.slides[i].elt, .3, {
+								scale: this.downscale, 
+								opacity: this.opacityoffset, 
+								y: this.yoffset,
+								filter: 'blur(' + this.bluroffset + 'px)'
+							});
 						}
 
 						tempSlides.push({
@@ -216,7 +261,7 @@ export default {
 				flex-shrink: 0;
 				img {
 					width: 100%;
-					height: 75vw;
+					height: auto;
 					object-fit: cover;
 				}
 			}
