@@ -1,17 +1,36 @@
 <template>
 	<div id="my-movies">
-		<h2>
-			<span v-for="genre in genres">{{ genre }}</span>
-		</h2>
-		<h3>{{ pagination }}/{{ movies.length }}</h3>
+		<div class="header">
+			<h2>
+				{{ mood.title }}
+			</h2>
+			<h3>
+				{{ mood.subtitle }}
+			</h3>
+		</div>
 		<ul v-if="movies.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
 			<li v-for="movie in movies">
-				<img :src="movie.backdropImage" alt="">
-				{{ movie.title }} - {{ movie.year }} <br>
-				<span v-for="rate in movie.customRating">{{ rate }}</span>
+				<img class="poster" :src="movie.backdropImage" alt="">
 			</li>
 		</ul>
 		<span v-else>Pas de films associés :(</span>
+		<div v-if="currentMovie" id="movie-description">
+			<h2 id="movie-title">{{ currentMovie.title }}</h2>
+			<div class="rating">
+				<span v-for="rate in currentMovie.customRating">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
+						<polygon :class="rate" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
+					</svg>
+				</span>
+			</div>
+			<div class="time">
+				<span v-if="currentMovie.hours">{{ currentMovie.hours }}h{{ currentMovie.minutes }}</span>
+				<span v-else>{{ currentMovie.minutes }} minutes</span>
+			</div>
+		</div>
+		<div id="actions">
+			
+		</div>
 	</div>
 </template>
 
@@ -33,7 +52,12 @@ export default {
 			downscale: .7,
 			yoffset: window.innerHeight * .03,
 			bluroffset: 1.2,
-			opacityoffset: .8
+			opacityoffset: .5,
+			currentMovie: null,
+			mood: {
+				title: "",
+				subtitle: ""
+			}
 		};
 	},
 
@@ -51,7 +75,8 @@ export default {
 		.then( response => {
 			this.movies = response.data.movies;
 			this.genres = response.data.genres;
-			this.slideWidth = window.innerWidth * .6;
+			this.mood = response.data.mood;
+			this.slideWidth = window.innerWidth * .668;
 			this.$nextTick( () => {
 				this.initSlides();
 			});
@@ -67,7 +92,7 @@ export default {
 				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%', width: this.slideWidth});
 
 				if(i != this.paginationIndex) {
-					TweenLite.set(elt, {scale: this.downscale, opacity: this.opacityoffset, y: this.yoffset, filter: 'blur(' + this.bluroffset + 'px)'});
+					TweenLite.set(elt, {scale: this.downscale, y: this.yoffset, filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'});
 				}
 
 				this.slides.push({
@@ -80,6 +105,7 @@ export default {
 
 			}
 
+			this.currentMovie = this.movies[this.paginationIndex];
 			
 		},
 		onTouchStart(e) {
@@ -118,25 +144,22 @@ export default {
 					if(i == this.paginationIndex - 1 && this.delta.x > 0) {
 						TweenLite.to(this.slides[i].elt, .3, {
 							scale: this.downscale + ((1 - this.downscale) * percentage/100),
-							opacity: this.opacityoffset + ((1 - this.opacityoffset) * percentage/100),
 							y: this.yoffset - this.yoffset * percentage/100,
-							filter: 'blur(' + this.bluroffset - this.bluroffset * percentage/100 + 'px)'
+							filter: 'blur(' + this.bluroffset - this.bluroffset * percentage/100 + 'px) brightness(' + this.opacityoffset + ((1 - this.opacityoffset) * percentage/100) + ')'
 						});
 					}
 					else if(i == this.paginationIndex) {
 						TweenLite.to(this.slides[i].elt, .3, {
 							scale: 1 - ((1 - this.downscale) * percentage/100), 
-							opacity: 1 - ((1 - this.opacityoffset) * percentage/100), 
 							y: this.yoffset * percentage/100,
-							filter: 'blur(' + this.bluroffset * percentage/100+ 'px)'
+							filter: 'blur(' + this.bluroffset * percentage/100+ 'px) brightness(' + 1 - ((1 - this.opacityoffset) * percentage/100) + ')'
 						});
 					}
 					else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
 						TweenLite.to(this.slides[i].elt, .3, {
 							scale: this.downscale + ((1 - this.downscale) * percentage/100), 
-							opacity: this.opacityoffset + ((1 - this.opacityoffset) * percentage/100), 
 							y: this.yoffset - this.yoffset * percentage/100,
-							filter: 'blur(' + this.bluroffset * percentage/100+ 'px)'
+							filter: 'blur(' + this.bluroffset * percentage/100+ 'px) brightness(' + this.opacityoffset + ((1 - this.opacityoffset) * percentage/100) + ')'
 						});
 					}
 				}
@@ -159,18 +182,16 @@ export default {
 						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * orientation});
 						if(i == newPagination - 1) {
 							TweenLite.to(this.slides[i].elt, .3, {
-								scale: 1, 
-								opacity: 1, 
+								scale: 1,
 								y: 0,
-								filter: 'blur(' + 0 + 'px)'
+								filter: 'blur(' + 0 + 'px) brightness(1)'
 							});
 						}
 						else {
 							TweenLite.to(this.slides[i].elt, .3, {
 								scale: this.downscale, 
-								opacity: this.opacityoffset, 
 								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px)'
+								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
 							});
 						}
 
@@ -183,16 +204,16 @@ export default {
 						});
 					}
 					this.pagination = newPagination;
+					this.currentMovie = this.movies[this.paginationIndex];
 				}
 				else {
 					for (let i = 0; i < this.slides.length; i++) {
 						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x});
 						if(i == this.paginationIndex - 1 && this.delta.x > 0) {
 							TweenLite.to(this.slides[i].elt, .3, {
-								scale: this.downscale,
-								opacity: this.opacityoffset, 
+								scale: this.downscale, 
 								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px)'
+								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
 							});
 						}
 						else if(i == this.paginationIndex) {
@@ -200,15 +221,14 @@ export default {
 								scale: 1,
 								opacity: 1,
 								y: 0,
-								filter: 'blur(' + 0 + 'px)'
+								filter: 'blur(' + 0 + 'px) brightness(1)'
 							});
 						}
 						else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
 							TweenLite.to(this.slides[i].elt, .3, {
 								scale: this.downscale, 
-								opacity: this.opacityoffset, 
 								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px)'
+								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
 							});
 						}
 
@@ -238,17 +258,34 @@ export default {
 	#my-movies {
 		overflow: hidden;
 		width: 100%;
-		height: 90%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		h2 {
+		background: linear-gradient( -10deg, $grey 40%, $romance 40%, $romance );
+
+		.header {
 			display: inline-block;
-			margin: auto;
-			span {
-				&:not(:last-child):after {
-					content: ' | ';
-				}
+			width: 100%;
+			text-align: center;
+			padding: 5vw 0;
+			color: white;
+			h3 {
+				color: rgba(255,255,255, 0.4);
 			}
+		}
+
+		h2 {
+			display: block;
+			margin: auto;
+			text-transform: uppercase;
+			letter-spacing: .2em;
+			margin: .5em 0
+		}
+
+		h3 {
+			display: block;
+			font-weight: 400;
+			margin: auto;
 		}
 
 		ul {
@@ -260,12 +297,43 @@ export default {
 				top: 50%;
 				left: 50%;
 				flex-shrink: 0;
-				img {
+				.poster {
+					border-radius: 1.5vw;
 					width: 100%;
 					height: auto;
 					object-fit: cover;
+					box-shadow: 0 1vw 6px rgba(0,0,0,.2);
 				}
 			}
+		}
+
+		#movie-description {
+			width: 100%;
+			text-align: center;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			#movie-title {
+				display: inline-block;
+				flex-basis: 100%;
+			}
+			.time, .rating {
+				flex-grow: 1;
+				svg {
+					display: inline-block;
+					width: 1em;
+					height: 1em;
+					margin: 0 .3em;
+					fill: $darker-grey;
+					.starred {
+						fill: $romance;
+					}
+				}
+			}
+		}
+
+		#actions {
+			height: 20vh;
 		}
 
 	}
