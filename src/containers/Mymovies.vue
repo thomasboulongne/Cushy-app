@@ -44,16 +44,18 @@ export default {
 	},
 
 	created() {
-		Axios.get('http://172.18.34.14:3637/app/' + this.id)
-		.then( response => {
-			this.movies = response.data.movies;
-			this.genres = response.data.genres;
-			setTimeout(this.initSlides, 200);
-		});
 	},
 
 	mounted() {
-		this.slideWidth = window.innerWidth * .68;
+		Axios.get('http://localhost:3637/app/' + this.id)
+		.then( response => {
+			this.movies = response.data.movies;
+			this.genres = response.data.genres;
+			this.slideWidth = window.innerWidth * .6;
+			this.$nextTick( () => {
+				this.initSlides();
+			});
+		});
 	},
 
 	methods: {
@@ -62,7 +64,7 @@ export default {
 			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
 				const elt = this.$refs.list.childNodes[i];
 
-				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%'});
+				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%', width: this.slideWidth});
 
 				if(i != this.paginationIndex) {
 					TweenLite.set(elt, {scale: this.downscale, opacity: this.opacityoffset, y: this.yoffset, filter: 'blur(' + this.bluroffset + 'px)'});
@@ -257,7 +259,6 @@ export default {
 				position: absolute;
 				top: 50%;
 				left: 50%;
-				width: 68vw;
 				flex-shrink: 0;
 				img {
 					width: 100%;
