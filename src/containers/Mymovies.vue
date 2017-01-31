@@ -8,24 +8,24 @@
 				{{ mood.subtitle }}
 			</h3>
 		</div>
-		<ul v-if="movies.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
-			<li v-for="movie in movies">
+		<ul v-if="currentList.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
+			<li v-for="movie in currentList">
 				<img class="poster" :src="movie.backdropImage" alt="">
 			</li>
 		</ul>
 		<span v-else>Pas de films associés :(</span>
-		<div v-if="currentMovie" id="movie-description">
-			<h2 id="movie-title">{{ currentMovie.title }}</h2>
+		<div v-if="current" id="movie-description">
+			<h2 id="movie-title">{{ current.title }}</h2>
 			<div class="rating">
-				<span v-for="rate in currentMovie.customRating">
+				<span v-for="rate in current.customRating">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
 						<polygon :class="rate" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
 					</svg>
 				</span>
 			</div>
 			<div class="time">
-				<span v-if="currentMovie.hours">{{ currentMovie.hours }}h{{ currentMovie.minutes }}</span>
-				<span v-else>{{ currentMovie.minutes }} minutes</span>
+				<span v-if="current.hours">{{ current.hours }}h{{ current.minutes }}</span>
+				<span v-else>{{ current.minutes }} minutes</span>
 			</div>
 		</div>
 		<div id="actions">
@@ -45,6 +45,7 @@ export default {
 	data() {
 		return {
 			id: Cookie.get('cushy-id'),
+			currentList: [],
 			movies: [],
 			genres: [],
 			slides: [],
@@ -53,7 +54,7 @@ export default {
 			yoffset: window.innerHeight * .03,
 			bluroffset: 1.2,
 			opacityoffset: .5,
-			currentMovie: null,
+			current: null,
 			mood: {
 				title: "",
 				subtitle: ""
@@ -67,6 +68,14 @@ export default {
 		}
 	},
 
+	watch: {
+		currentList: function() {
+			this.$nextTick( () => {
+				this.initSlides();
+			});
+		}
+	},
+
 	created() {
 	},
 
@@ -74,12 +83,13 @@ export default {
 		Axios.get('http://localhost:3637/app/' + this.id)
 		.then( response => {
 			this.movies = response.data.movies;
+			this.shows = response.data.shows;
 			this.genres = response.data.genres;
 			this.mood = response.data.mood;
 			this.slideWidth = window.innerWidth * .668;
-			this.$nextTick( () => {
-				this.initSlides();
-			});
+
+			this.currentList = this.shows;
+
 		});
 	},
 
@@ -105,7 +115,7 @@ export default {
 
 			}
 
-			this.currentMovie = this.movies[this.paginationIndex];
+			this.current = this.currentList[this.paginationIndex];
 			
 		},
 		onTouchStart(e) {
@@ -204,7 +214,7 @@ export default {
 						});
 					}
 					this.pagination = newPagination;
-					this.currentMovie = this.movies[this.paginationIndex];
+					this.current = this.currentList[this.paginationIndex];
 				}
 				else {
 					for (let i = 0; i < this.slides.length; i++) {
