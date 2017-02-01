@@ -18,7 +18,7 @@
 		</ul>
 		<span v-else>Pas de films associés :(</span>
 		<div v-if="current" id="movie-description">
-			<h2 id="movie-title">{{ current.title }}</h2>
+			<h2 id="movie-title" ref="title">{{ current.title }}</h2>
 			<div class="rating">
 				<span v-for="rate in current.customRating">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
@@ -52,12 +52,17 @@ export default {
 			movies: [],
 			genres: [],
 			slides: [],
+			delta: {
+				x: 0,
+				y: 0
+			},
 			pagination: 1,
 			downscale: .7,
-			yoffset: window.innerHeight * .03,
+			yoffset: window.innerHeight * .05,
 			bluroffset: 1.2,
 			opacityoffset: .5,
 			current: null,
+			orientation: 0,
 			mood: {
 				title: "",
 				subtitle: ""
@@ -76,6 +81,20 @@ export default {
 			this.$nextTick( () => {
 				this.initSlides();
 			});
+		},
+
+		current: function() {
+			if(this.$refs.title){
+				TweenLite.fromTo(this.$refs.title, .3, {
+					opacity: 0,
+					scale: .65,
+					x: this.orientation * -1 * window.innerWidth * .4
+				}, {
+					opacity: 1,
+					scale: 1,
+					x: 0
+				});
+			}
 		}
 	},
 
@@ -99,6 +118,7 @@ export default {
 	methods: {
 		initSlides() {
 			this.slides = [];
+			this.pagination = 1;
 			for (let i = 0; i < this.$refs.list.childNodes.length; i++) {
 				const elt = this.$refs.list.childNodes[i];
 
@@ -117,6 +137,8 @@ export default {
 				});
 
 			}
+
+			this.resetSlides();
 
 			this.current = this.currentList[this.paginationIndex];
 			
@@ -149,6 +171,7 @@ export default {
 
 			if (!this.isScrolling && this.touchOffset && Math.abs(this.delta.x) < this.slideWidth) {
 				e.preventDefault();
+				this.orientation = this.delta.x > 0 ? 1 : -1;
 
 				const percentage = Math.abs(this.delta.x) / (this.slideWidth/100);
 
@@ -185,14 +208,13 @@ export default {
 			if (!this.isScrolling && this.touchOffset) {
 				e.preventDefault();
 				
-				const orientation = this.delta.x > 0 ? 1 : -1;
-				const newPagination = this.pagination - orientation;
+				const newPagination = this.pagination - this.orientation;
 
 				let tempSlides = [];
 
 				if(Math.abs(this.delta.x) > this.slideWidth / 3 && newPagination > 0 && newPagination < this.slides.length + 1) {
 					for (let i = 0; i < this.slides.length; i++) {
-						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * orientation});
+						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * this.orientation});
 						if(i == newPagination - 1) {
 							TweenLite.to(this.slides[i].elt, .3, {
 								scale: 1,
@@ -211,7 +233,7 @@ export default {
 						tempSlides.push({
 							elt: this.slides[i].elt,
 							position: {
-								x: this.slides[i].position.x + this.slideWidth * orientation,
+								x: this.slides[i].position.x + this.slideWidth * this.orientation,
 								y: this.slides[i].elt._gsTransform.yPercent,
 							}
 						});
@@ -220,42 +242,48 @@ export default {
 					this.current = this.currentList[this.paginationIndex];
 				}
 				else {
-					for (let i = 0; i < this.slides.length; i++) {
-						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x});
-						if(i == this.paginationIndex - 1 && this.delta.x > 0) {
-							TweenLite.to(this.slides[i].elt, .3, {
-								scale: this.downscale, 
-								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
-							});
-						}
-						else if(i == this.paginationIndex) {
-							TweenLite.to(this.slides[i].elt, .3, {
-								scale: 1,
-								opacity: 1,
-								y: 0,
-								filter: 'blur(' + 0 + 'px) brightness(1)'
-							});
-						}
-						else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
-							TweenLite.to(this.slides[i].elt, .3, {
-								scale: this.downscale, 
-								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
-							});
-						}
-
-						tempSlides.push({
-							elt: this.slides[i].elt,
-							position: {
-								x: this.slides[i].position.x,
-								y: this.slides[i].elt._gsTransform.yPercent,
-							}
-						});
-					}
+					tempSlides = this.resetSlides();
 				}
 				this.slides = tempSlides.slice();
 			}
+		},
+
+		resetSlides() {
+			let tempSlides = [];
+			for (let i = 0; i < this.slides.length; i++) {
+				TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x});
+				if(i == this.paginationIndex - 1 && this.delta.x > 0) {
+					TweenLite.to(this.slides[i].elt, .3, {
+						scale: this.downscale, 
+						y: this.yoffset,
+						filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
+					});
+				}
+				else if(i == this.paginationIndex) {
+					TweenLite.to(this.slides[i].elt, .3, {
+						scale: 1,
+						opacity: 1,
+						y: 0,
+						filter: 'blur(' + 0 + 'px) brightness(1)'
+					});
+				}
+				else if(i == this.paginationIndex + 1 && this.delta.x < 0) {
+					TweenLite.to(this.slides[i].elt, .3, {
+						scale: this.downscale, 
+						y: this.yoffset,
+						filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
+					});
+				}
+
+				tempSlides.push({
+					elt: this.slides[i].elt,
+					position: {
+						x: this.slides[i].position.x,
+						y: this.slides[i].elt._gsTransform.yPercent,
+					}
+				});
+			}
+			return tempSlides;
 		},
 
 		switchList() {
