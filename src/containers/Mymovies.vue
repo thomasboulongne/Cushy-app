@@ -2,7 +2,28 @@
 	<div id="my-movies">
 		<div class="header">
 			<div class="switch" @click="switchList()">
-				
+				<svg v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
+					<path d="M1.9,23.8h20.9V11.9H1.9V23.8z M5.2,5.4L3.7,7.9l-2,0.5l-0.5-2L5.2,5.4z M22.1,3.3l-3.9,1l1.5-2.5
+						c0,0,0,0,0,0l1.9-0.5L22.1,3.3z M15.8,9.1h3.6l-2,2c0,0,0,0,0,0h-3.6L15.8,9.1z M11.2,9.1h3.6l-2,2c0,0,0,0,0,0H9.1L11.2,9.1z
+						 M6.5,9.1h3.6l-2,2c0,0,0,0,0,0H4.5L6.5,9.1z M3.5,11.2H1.9V9.1h3.6L3.5,11.2C3.5,11.2,3.5,11.2,3.5,11.2L3.5,11.2z M18.7,2
+						l-1.5,2.5l-3.5,0.9l1.5-2.5L18.7,2z M14.2,3.1l-1.5,2.5L9.2,6.5L10.7,4L14.2,3.1z M9.7,4.3L8.2,6.7L4.7,7.6l1.5-2.5L9.7,4.3z
+						 M22.8,11.2h-4.5l2.1-2.1h2.4V11.2z M23.5,8.8c0-0.2-0.2-0.4-0.4-0.4H4.4l18.2-4.5c0.1,0,0.2-0.1,0.2-0.2c0-0.1,0.1-0.2,0-0.3
+						l-0.7-2.7c0-0.2-0.2-0.3-0.4-0.3l-21,5.3c-0.1,0-0.2,0.1-0.2,0.2c0,0.1-0.1,0.2,0,0.3l0.7,2.6v15.3c0,0.2,0.2,0.4,0.4,0.4h21.7
+						c0.2,0,0.4-0.2,0.4-0.4V8.8z"/>
+					<path d="M10,18.7h4.3v-4.1H10V18.7z M19.1,18.7h-4v-4.1h4c0.2,0,0.4-0.2,0.4-0.4c0-0.2-0.2-0.4-0.4-0.4H5.4
+						c-0.2,0-0.4,0.2-0.4,0.4c0,0.2,0.2,0.4,0.4,0.4h3.9v4.1H5.4c-0.2,0-0.4,0.2-0.4,0.4c0,0.2,0.2,0.4,0.4,0.4h13.7
+						c0.2,0,0.4-0.2,0.4-0.4C19.5,18.9,19.3,18.7,19.1,18.7L19.1,18.7z"/>
+					<path d="M19.1,21.1H5.4c-0.2,0-0.4,0.2-0.4,0.4c0,0.2,0.2,0.4,0.4,0.4h13.7c0.2,0,0.4-0.2,0.4-0.4
+						C19.5,21.3,19.3,21.1,19.1,21.1"/>
+				</svg>
+				<svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 27 27">
+					<path d="M23.4,25.2H2.7C1.2,25.2,0,24,0,22.5V8.3c0-1.5,1.2-2.7,2.7-2.7h20.7c1.5,0,2.7,1.2,2.7,2.7v14.2
+						C26.1,24,24.9,25.2,23.4,25.2z"/>
+					<polygon points="2.7,22.2 18.7,22.2 18.7,8.6 2.7,8.6 "/>
+					<polyline points="13.7,0 17.6,5.6 22.2,1.3 "/>
+					<path d="M23.9,10c0,0.8-0.6,1.4-1.4,1.4S21,10.8,21,10s0.6-1.4,1.4-1.4S23.9,9.2,23.9,10z"/>
+					<path d="M23.9,15c0,0.8-0.6,1.4-1.4,1.4S21,15.8,21,15c0-0.8,0.6-1.4,1.4-1.4S23.9,14.2,23.9,15z"/>
+				</svg>
 			</div>
 			<h2>
 				{{ mood.title }}
@@ -87,12 +108,10 @@ export default {
 			if(this.$refs.title){
 				TweenLite.fromTo(this.$refs.title, .3, {
 					opacity: 0,
-					scale: .65,
-					x: this.orientation * -1 * window.innerWidth * .4
+					y: window.innerWidth * .03
 				}, {
 					opacity: 1,
-					scale: 1,
-					x: 0
+					y: 0
 				});
 			}
 		}
@@ -125,7 +144,11 @@ export default {
 				TweenLite.set(elt, {x: (-50 + i * 100) + '%', y: '-50%', width: this.slideWidth});
 
 				if(i != this.paginationIndex) {
-					TweenLite.set(elt, {scale: this.downscale, y: this.yoffset, filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'});
+					TweenLite.set(elt, {
+						scale: this.downscale,
+						y: this.yoffset,
+						filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
+					});
 				}
 
 				this.slides.push({
@@ -322,9 +345,20 @@ export default {
 				position: absolute;
 				top: $margin;
 				left: $margin;
-				width: 10vw;
-				height: 10vw;
-				background: red;
+				width: 11vw;
+				height: 11vw;
+
+				border-radius: 50%;
+				background-color: white;
+
+				svg {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					width: 60%;
+					height: 60%;
+				}
 			}
 
 			h3 {
@@ -355,6 +389,7 @@ export default {
 				top: 50%;
 				left: 50%;
 				flex-shrink: 0;
+				perspective: 5000px;
 				.poster {
 					border-radius: 1.5vw;
 					width: 100%;
