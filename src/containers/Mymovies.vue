@@ -1,6 +1,9 @@
 <template>
 	<div id="my-movies">
 		<div class="header">
+			<div class="switch" @click="switchList()">
+				
+			</div>
 			<h2>
 				{{ mood.title }}
 			</h2>
@@ -253,6 +256,13 @@ export default {
 				}
 				this.slides = tempSlides.slice();
 			}
+		},
+
+		switchList() {
+			if(this.currentList == this.movies)
+				this.currentList = this.shows;
+			else
+				this.currentList = this.movies;
 		}
 	},
 
@@ -277,8 +287,18 @@ export default {
 			display: inline-block;
 			width: 100%;
 			text-align: center;
-			padding: 5vw 0;
+			margin: $margin 0;
 			color: white;
+
+			.switch {
+				position: absolute;
+				top: $margin;
+				left: $margin;
+				width: 10vw;
+				height: 10vw;
+				background: red;
+			}
+
 			h3 {
 				color: rgba(255,255,255, 0.4);
 			}
