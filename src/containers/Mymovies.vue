@@ -53,7 +53,23 @@
 			</div>
 		</div>
 		<div id="actions">
-			
+			<div>
+				<svg @click="discard()" id="discard" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<circle fill="#E5E5E5" cx="19" cy="19" r="19"></circle>
+					<path d="M19.3575317,19 L24.9259556,13.4315761 C25.0247489,13.3328839 25.0247489,13.1728125 24.9259556,13.0740191 C24.8273645,12.975327 24.6671919,12.975327 24.5684997,13.0740191 L19.0000758,18.6425442 L13.4315508,13.0740191 C13.3328586,12.975327 13.1726861,12.975327 13.074095,13.0740191 C12.9753017,13.1728125 12.9753017,13.3328839 13.074095,13.4315761 L18.64262,19 L13.074095,24.568525 C12.9753017,24.6672172 12.9753017,24.8272887 13.074095,24.9259809 C13.1234411,24.975327 13.1881573,25 13.2527723,25 C13.3174885,25 13.3822047,24.975327 13.4315508,24.9259809 L19.0000758,19.3574558 L24.5684997,24.9259809 C24.6178458,24.975327 24.682562,25 24.7472782,25 C24.8118933,25 24.8767106,24.975327 24.9259556,24.9259809 C25.0247489,24.8272887 25.0247489,24.6672172 24.9259556,24.568525 L19.3575317,19 Z" stroke="#D9D9D9" stroke-width="1.5" fill="#D9D9D9"></path>
+				</svg>
+				<svg @click="like()" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<circle id="Button-Copy-2" fill="#E5E5E5" cx="37.5" cy="37.5" r="37.5"></circle>
+					<path d="M52.6066451,26.7460554 C50.7852003,24.9752168 48.4070867,24 45.9087356,24 C43.2170915,24 40.6163864,25.1647049 38.7732532,27.1961847 L37.3452435,28.7722082 L35.9153313,27.1954237 C34.0725786,25.1647049 31.4722541,24 28.7798489,24 C26.2818784,24 23.9030037,24.9752168 22.0804174,26.7464359 C18.1483492,30.5750086 17.9546757,37.0042864 21.6489325,41.0782804 C21.659206,41.0896953 21.6698599,41.1014908 21.6808944,41.1125252 L36.3395868,56.2605384 C36.6158285,56.545912 36.9773018,56.6878378 37.338014,56.6878378 C37.6991068,56.6878378 38.0605801,56.5455315 38.3360608,56.2609189 L53.0054072,41.1125252 C53.0160611,41.1014908 53.0267151,41.0896953 53.037369,41.0782804 C56.7323869,37.0065694 56.5390938,30.5776721 52.6066451,26.7460554 Z" id="Page-1-Copy" stroke="#C51DB0" stroke-width="2"></path>
+				</svg>
+			</div>
+			<div>
+				<svg @click="play()" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<circle fill="#E5E5E5" cx="37.5" cy="37.5" r="37.5"></circle>
+					<circle fill="#C51DB0" cx="37.5" cy="37.5" r="31.5"></circle>
+					<path d="M29.0341876,22.4734126 L29.0341876,52.5266964 L52.0003908,37.4999511 L29.0341876,22.4734126 Z M28.5170938,54 C28.4327041,54 28.3481075,53.9793162 28.271164,53.9377419 C28.1040393,53.8473539 28,53.6727831 28,53.4829062 L28,21.5172028 C28,21.327326 28.1040393,21.1527551 28.271164,21.0623671 C28.437875,20.9719791 28.6409895,20.9802526 28.8002543,21.0844987 L53.2279714,37.0674539 C53.3739987,37.1628059 53.4619047,37.3255871 53.4619047,37.4999511 C53.4619047,37.674522 53.3739987,37.8373031 53.2279714,37.9326552 L28.8002543,53.9156103 C28.7146236,53.9716633 28.6159621,54 28.5170938,54 L28.5170938,54 Z" id="Fill-1" stroke="#F5F5F5" fill="#F5F5F5"></path>
+				</svg>
+			</div>
 		</div>
 	</div>
 </template>
@@ -166,6 +182,7 @@ export default {
 			this.current = this.currentList[this.paginationIndex];
 			
 		},
+
 		onTouchStart(e) {
 			this.touches = e.touches ? e.touches[0] : e;
 			this.touchOffset = {
@@ -314,6 +331,27 @@ export default {
 				this.currentList = this.shows;
 			else
 				this.currentList = this.movies;
+		},
+
+		discard() {
+			if(this.currentList == this.movies) {
+				const index = this.movies.indexOf(this.current);
+				if (index > -1) {
+					this.movies.splice(index, 1);
+				}
+				this.currentList = this.movies;
+			}
+			else {
+				const index = this.shows.indexOf(this.current);
+				if (index > -1) {
+					this.shows.splice(index, 1);
+				}
+				this.currentList = this.shows;
+			}
+		},
+
+		play() {
+			window.open('https://www.netflix.com/search?q=' + this.current.title, '_blank');
 		}
 	},
 
@@ -448,7 +486,25 @@ export default {
 		}
 
 		#actions {
-			height: 20vh;
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			margin: #{$margin * 2} 0 $margin 0;
+			position: relative;
+			div {
+				position: relative;
+			}
+			svg#discard {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 8vw;
+				transform: translate(-50%, -50%);
+			}
+
+			svg {
+				width: 15vw;
+			}
 		}
 
 	}
