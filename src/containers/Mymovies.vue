@@ -1,8 +1,8 @@
 <template>
-	<div id="my-movies">
+	<div id="my-movies" :class="genres[0]">
 		<div class="header">
 			<div class="switch" @click="switchList()">
-				<svg v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
+				<svg :class="genres[0]" v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
 					<path d="M1.9,23.8h20.9V11.9H1.9V23.8z M5.2,5.4L3.7,7.9l-2,0.5l-0.5-2L5.2,5.4z M22.1,3.3l-3.9,1l1.5-2.5
 						c0,0,0,0,0,0l1.9-0.5L22.1,3.3z M15.8,9.1h3.6l-2,2c0,0,0,0,0,0h-3.6L15.8,9.1z M11.2,9.1h3.6l-2,2c0,0,0,0,0,0H9.1L11.2,9.1z
 						 M6.5,9.1h3.6l-2,2c0,0,0,0,0,0H4.5L6.5,9.1z M3.5,11.2H1.9V9.1h3.6L3.5,11.2C3.5,11.2,3.5,11.2,3.5,11.2L3.5,11.2z M18.7,2
@@ -16,7 +16,7 @@
 					<path d="M19.1,21.1H5.4c-0.2,0-0.4,0.2-0.4,0.4c0,0.2,0.2,0.4,0.4,0.4h13.7c0.2,0,0.4-0.2,0.4-0.4
 						C19.5,21.3,19.3,21.1,19.1,21.1"/>
 				</svg>
-				<svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 27 27">
+				<svg :class="genres[0]" v-else version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 27 27">
 					<path d="M23.4,25.2H2.7C1.2,25.2,0,24,0,22.5V8.3c0-1.5,1.2-2.7,2.7-2.7h20.7c1.5,0,2.7,1.2,2.7,2.7v14.2
 						C26.1,24,24.9,25.2,23.4,25.2z"/>
 					<polygon points="2.7,22.2 18.7,22.2 18.7,8.6 2.7,8.6 "/>
@@ -42,7 +42,7 @@
 			<h2 id="movie-title" ref="title">{{ current.title }}</h2>
 			<div class="rating">
 				<span v-for="rate in current.customRating">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
+					<svg :class="genres[0]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
 						<polygon :class="rate" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
 					</svg>
 				</span>
@@ -332,7 +332,30 @@ export default {
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		background: linear-gradient( -10deg, $grey 40%, $romance 40%, $romance );
+
+		&.thriller {
+			background: linear-gradient( -10deg, $grey 40%, $thriller 40%, $thriller );
+		}
+
+		&.romance {
+			background: linear-gradient( -10deg, $grey 40%, $romance 40%, $romance );
+		}
+
+		&.drama {
+			background: linear-gradient( -10deg, $grey 40%, $drama 40%, $drama );
+		}
+
+		&.comedy {
+			background: linear-gradient( -10deg, $grey 40%, $comedy 40%, $comedy );
+		}
+
+		&.action {
+			background: linear-gradient( -10deg, $grey 40%, $action 40%, $action );
+		}
+
+		&.fantasy {
+			background: linear-gradient( -10deg, $grey 40%, $fantasy 40%, $fantasy );
+		}
 
 		.header {
 			display: inline-block;
@@ -417,9 +440,8 @@ export default {
 					width: 1em;
 					height: 1em;
 					margin: 0 .3em;
-					fill: $darker-grey;
-					.starred {
-						fill: $romance;
+					polygon:not(.starred) {
+						fill: $darker-grey !important;
 					}
 				}
 			}
