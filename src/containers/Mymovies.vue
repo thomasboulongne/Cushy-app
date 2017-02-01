@@ -1,5 +1,6 @@
 <template>
-	<div id="my-movies" :class="genres[0]">
+	<div id="my-movies">
+		<div class="bg" :class="genres[0]" ref="bg"></div>
 		<div class="header">
 			<div class="switch" @click="switchList()">
 				<svg :class="genres[0]" v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
@@ -38,18 +39,26 @@
 			</li>
 		</ul>
 		<span v-else>Pas de films associés :(</span>
-		<div v-if="current" id="movie-description">
+		<div v-if="current" id="movie-description" ref="description">
 			<h2 id="movie-title" ref="title">{{ current.title }}</h2>
-			<div class="rating">
-				<span v-for="rate in current.customRating">
-					<svg :class="genres[0]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
-						<polygon :class="rate" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
-					</svg>
-				</span>
+			<div class="line">
+				<div class="rating">
+					<span v-for="rate in current.customRating">
+						<svg :class="genres[0]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
+							<polygon :class="rate" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
+						</svg>
+					</span>
+				</div>
+				<div class="time">
+					<span v-if="current.hours">{{ current.hours }}h{{ current.minutes }}</span>
+					<span v-else>{{ current.minutes }} minutes</span>
+				</div>
 			</div>
-			<div class="time">
-				<span v-if="current.hours">{{ current.hours }}h{{ current.minutes }}</span>
-				<span v-else>{{ current.minutes }} minutes</span>
+			<div class="overview" ref="overview">
+				{{ current.overview }}
+			</div>
+			<div class="authors" ref="authors">
+				<!-- {{ current.authors }} -->
 			</div>
 		</div>
 		<div id="actions">
@@ -103,7 +112,8 @@ export default {
 			mood: {
 				title: "",
 				subtitle: ""
-			}
+			},
+			details: false
 		};
 	},
 
@@ -209,7 +219,7 @@ export default {
 				this.isScrolling = !!(this.isScrolling || Math.abs(this.delta.x) < Math.abs(this.delta.y));
 			}
 
-			if (!this.isScrolling && this.touchOffset && Math.abs(this.delta.x) < this.slideWidth) {
+			if (!this.isScrolling && this.touchOffset && Math.abs(this.delta.x) < this.slideWidth && !this.details) {
 				e.preventDefault();
 				this.orientation = this.delta.x > 0 ? 1 : -1;
 
@@ -246,45 +256,55 @@ export default {
 		onTouchEnd(e) {
 
 			if (!this.isScrolling && this.touchOffset) {
+
 				e.preventDefault();
 				
-				const newPagination = this.pagination - this.orientation;
+				if(Math.abs(this.delta.x) > 0 && !this.details) {
 
-				let tempSlides = [];
+					const newPagination = this.pagination - this.orientation;
 
-				if(Math.abs(this.delta.x) > this.slideWidth / 3 && newPagination > 0 && newPagination < this.slides.length + 1) {
-					for (let i = 0; i < this.slides.length; i++) {
-						TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * this.orientation});
-						if(i == newPagination - 1) {
-							TweenLite.to(this.slides[i].elt, .3, {
-								scale: 1,
-								y: 0,
-								filter: 'blur(' + 0 + 'px) brightness(1)'
-							});
-						}
-						else {
-							TweenLite.to(this.slides[i].elt, .3, {
-								scale: this.downscale, 
-								y: this.yoffset,
-								filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
-							});
-						}
+					let tempSlides = [];
 
-						tempSlides.push({
-							elt: this.slides[i].elt,
-							position: {
-								x: this.slides[i].position.x + this.slideWidth * this.orientation,
-								y: this.slides[i].elt._gsTransform.yPercent,
+					if(Math.abs(this.delta.x) > this.slideWidth / 3 && newPagination > 0 && newPagination < this.slides.length + 1) {
+						for (let i = 0; i < this.slides.length; i++) {
+							TweenLite.to(this.slides[i].elt, .3, {x: this.slides[i].position.x + this.slideWidth * this.orientation});
+							if(i == newPagination - 1) {
+								TweenLite.to(this.slides[i].elt, .3, {
+									scale: 1,
+									y: 0,
+									filter: 'blur(' + 0 + 'px) brightness(1)'
+								});
 							}
-						});
+							else {
+								TweenLite.to(this.slides[i].elt, .3, {
+									scale: this.downscale, 
+									y: this.yoffset,
+									filter: 'blur(' + this.bluroffset + 'px) brightness(' + this.opacityoffset + ')'
+								});
+							}
+
+							tempSlides.push({
+								elt: this.slides[i].elt,
+								position: {
+									x: this.slides[i].position.x + this.slideWidth * this.orientation,
+									y: this.slides[i].elt._gsTransform.yPercent,
+								}
+							});
+						}
+						this.pagination = newPagination;
+						this.current = this.currentList[this.paginationIndex];
 					}
-					this.pagination = newPagination;
-					this.current = this.currentList[this.paginationIndex];
+					else {
+						tempSlides = this.resetSlides();
+					}
+					this.slides = tempSlides.slice();
 				}
 				else {
-					tempSlides = this.resetSlides();
+					if(!this.details)
+						this.openDetails();
+					else
+						this.closeDetails();
 				}
-				this.slides = tempSlides.slice();
 			}
 		},
 
@@ -351,7 +371,72 @@ export default {
 		},
 
 		play() {
+
 			window.open('https://www.netflix.com/search?q=' + this.current.title, '_blank');
+		},
+
+		openDetails() {
+
+			this.detailsTl = new TimelineLite({
+				paused: true,
+				onStart: () => {
+					this.details = true;
+				},
+				onReverseComplete: () => {
+					this.details = false;
+				}
+			});
+			for (let i = 0; i < this.slides.length; i++) {
+				const slide = this.slides[i];
+				if(i == this.paginationIndex) {
+					this.detailsTl.to(slide.elt, .4, {
+						top: 0,
+						left: 0,
+						x: '0%',
+						y: '0%',
+						height: window.innerHeight * .3,
+						width: window.innerWidth,
+						overflow: 'default',
+						borderRadius: 0
+					}, 0)
+					.set(slide.elt.childNodes[0], {
+						height: '100%',
+						borderRadius: 0
+					}, 0)
+					.to(this.$refs.list, .4, {
+						flexGrow: 0,
+						height: window.innerHeight * .3
+					}, 0)
+					.fromTo(this.$refs.description, .4, {
+						flexGrow: 0
+					}, {
+						flexGrow: 1
+					}, 0)
+					.to(this.$refs.bg, .4, {
+						height: '40%'
+					}, 0)
+					.fromTo(this.$refs.overview, .4,{
+						display: 'none',
+						opacity: 0,
+						y: window.innerHeight * .05
+					}, {
+						display: 'block',
+						opacity: 1,
+						y: 0
+					}, "-= 0.2");
+				}
+				else {
+					this.detailsTl.to(slide.elt, .3, {
+						opacity: 0,
+						scale: .3
+					}, 0);
+				}
+			}
+			this.detailsTl.play();
+		},
+
+		closeDetails() {
+			this.detailsTl.reverse();
 		}
 	},
 
@@ -370,28 +455,37 @@ export default {
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		position: relative;
 
-		&.thriller {
+		.bg {
+			position: absolute;
+			top: 0;
+			height: 100%;
+			left: 0;
+			width: 100%;
+		}
+
+		.bg.thriller {
 			background: linear-gradient( -10deg, $grey 40%, $thriller 40%, $thriller );
 		}
 
-		&.romance {
+		.bg.romance {
 			background: linear-gradient( -10deg, $grey 40%, $romance 40%, $romance );
 		}
 
-		&.drama {
+		.bg.drama {
 			background: linear-gradient( -10deg, $grey 40%, $drama 40%, $drama );
 		}
 
-		&.comedy {
+		.bg.comedy {
 			background: linear-gradient( -10deg, $grey 40%, $comedy 40%, $comedy );
 		}
 
-		&.action {
+		.bg.action {
 			background: linear-gradient( -10deg, $grey 40%, $action 40%, $action );
 		}
 
-		&.fantasy {
+		.bg.fantasy {
 			background: linear-gradient( -10deg, $grey 40%, $fantasy 40%, $fantasy );
 		}
 
@@ -401,10 +495,10 @@ export default {
 			text-align: center;
 			margin: $margin 0;
 			color: white;
+			position: relative;
 
 			.switch {
 				position: absolute;
-				top: $margin;
 				left: $margin;
 				width: 11vw;
 				height: 11vw;
@@ -432,7 +526,7 @@ export default {
 			margin: auto;
 			text-transform: uppercase;
 			letter-spacing: .2em;
-			margin: .5em 0
+			margin: .9em 0
 		}
 
 		h3 {
@@ -451,12 +545,16 @@ export default {
 				left: 50%;
 				flex-shrink: 0;
 				perspective: 5000px;
+				box-shadow: 0 1vw 6px rgba(0,0,0,.2);
+				background: transparent;
+				border-radius: 1.5vw;
+				overflow: hidden;
 				.poster {
 					border-radius: 1.5vw;
 					width: 100%;
 					height: auto;
 					object-fit: cover;
-					box-shadow: 0 1vw 6px rgba(0,0,0,.2);
+					display: block;
 				}
 			}
 		}
@@ -464,14 +562,20 @@ export default {
 		#movie-description {
 			width: 100%;
 			text-align: center;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			#movie-title {
+			#movie-title, .overview {
 				display: inline-block;
 				flex-basis: 100%;
+				position: relative;
+			}
+			.line {
+				width: 100%;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				align-content: flex-start;
 			}
 			.time, .rating {
+				position: relative;
 				flex-grow: 1;
 				svg {
 					display: inline-block;
@@ -482,6 +586,16 @@ export default {
 						fill: $darker-grey !important;
 					}
 				}
+			}
+
+			.overview {
+				display: none;
+				margin: $margin 0;
+				padding: $margin;
+				background: white;
+				font-size: 1.3em;
+				text-align: left;
+				line-height: 1.5em;
 			}
 		}
 
