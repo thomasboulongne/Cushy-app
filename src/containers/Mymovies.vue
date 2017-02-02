@@ -151,7 +151,8 @@ export default {
 	},
 
 	mounted() {
-		Axios.get('http://localhost:3637/app/' + this.id)
+		const url = __PROD__ ? 'https://coussflix.thomasboulongne.com' : 'http://localhost:3637';
+		Axios.get(url + '/app/' + this.id)
 		.then( response => {
 			this.movies = response.data.movies;
 			this.shows = response.data.shows;
