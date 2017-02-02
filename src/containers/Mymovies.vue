@@ -1,7 +1,7 @@
 <template>
 	<div id="my-movies">
 		<div class="bg" :class="genres[0]" ref="bg"></div>
-		<div class="header">
+		<div class="header" ref="header">
 			<div class="switch" @click="switchList()">
 				<svg :class="genres[0]" v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
 					<path d="M1.9,23.8h20.9V11.9H1.9V23.8z M5.2,5.4L3.7,7.9l-2,0.5l-0.5-2L5.2,5.4z M22.1,3.3l-3.9,1l1.5-2.5
@@ -34,12 +34,15 @@
 			</h3>
 		</div>
 		<ul v-if="currentList.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
-			<li v-for="movie in currentList">
-				<img class="poster" :src="movie.backdropImage" alt="">
+			<li v-for="current in currentList">
+				<img class="poster" :src="current.backdropImage" alt="">
+				<div class="trailer" ref="trailer" v-if="current.trailer">
+					<iframe :src="'https://www.youtube.com/embed/' + current.trailerId" frameborder="0" allowfullscreen></iframe>
+				</div>
 			</li>
 		</ul>
 		<span v-else>Pas de films associés :(</span>
-		<div v-if="current" id="movie-description" ref="description">
+		<div v-if="current" id="movie-description" ref="description" @touchstart="onDetailsTouchStart($event)" @touchmove="onDetailsTouchMove($event)" @touchend="onDetailsTouchEnd($event)">
 			<h2 id="movie-title" ref="title">{{ current.title }}</h2>
 			<div class="line">
 				<div class="rating">
@@ -380,6 +383,44 @@ export default {
 			window.open('https://www.netflix.com/search?q=' + this.current.title, '_blank');
 		},
 
+		onDetailsTouchStart(e) {
+			if(this.details) {
+				this.detailsTouches = e.touches ? e.touches[0] : e;
+				this.detailsTouchOffset = {
+					x: this.detailsTouches.pageX,
+					y: this.detailsTouches.pageY,
+					time: Date.now()
+				};
+
+				this.detailsIsScrolling = undefined;
+				this.detailsDelta = {};
+			}
+		},
+
+		onDetailsTouchMove(e) {
+			if(this.details) {
+				this.detailsTouches = event.touches ? event.touches[0] : event;
+				this.detailsPageX = this.detailsTouches.pageX;
+				this.detailsPageY = this.detailsTouches.pageY;
+
+				this.detailsDelta = {
+					x: this.detailsPageX - this.detailsTouchOffset.x,
+					y: this.detailsPageY - this.detailsTouchOffset.y
+				};
+
+				this.detailsOrientation = this.detailsDelta.x > 0 ? 1 : -1;
+			}
+
+		},
+
+		onDetailsTouchEnd(e) {
+
+			if (this.details && this.detailsDelta.y > window.innerHeight * .15) {
+				e.preventDefault();
+				this.closeDetails();
+			}
+		},
+
 		openDetails() {
 
 			this.detailsTl = new TimelineLite({
@@ -401,12 +442,15 @@ export default {
 						y: '0%',
 						height: window.innerHeight * .3,
 						width: window.innerWidth,
-						overflow: 'default',
 						borderRadius: 0
 					}, 0)
 					.set(slide.elt.childNodes[0], {
 						height: '100%',
 						borderRadius: 0
+					}, 0)
+					.to(this.$refs.header, .4, {
+						height: 0,
+						margin: 0
 					}, 0)
 					.to(this.$refs.list, .4, {
 						flexGrow: 0,
@@ -446,7 +490,11 @@ export default {
 						display: 'block',
 						opacity: 1,
 						y: 0
-					}, "-= 0.2")
+					}, "-= 0.4")
+					.to(this.$refs.trailer, .4, {
+						display: 'block',
+						opacity: 1
+					})
 					;
 				}
 				else {
@@ -574,13 +622,27 @@ export default {
 				box-shadow: 0 1vw 6px rgba(0,0,0,.2);
 				background: transparent;
 				border-radius: 1.5vw;
-				overflow: hidden;
+
 				.poster {
 					border-radius: 1.5vw;
 					width: 100%;
 					height: auto;
 					object-fit: cover;
 					display: block;
+				}
+
+				.trailer {
+					display: none;
+					opacity: 0;
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					iframe {
+						width: 100%;
+						height: 100%;
+					}
 				}
 			}
 		}
