@@ -163,7 +163,7 @@ export default {
 			this.shows = response.data.shows;
 			this.genres = response.data.genres;
 			this.mood = response.data.mood;
-			this.slideWidth = window.innerWidth * .668;
+			this.slideWidth = window.innerWidth * .6;
 
 			this.currentList = this.shows;
 
