@@ -102,7 +102,7 @@ module.exports = {
 		new webpack.ProvidePlugin({
 			'Vue': 'vue',
 			'THREE': 'three',
-			'Cookie': 'js-cookie',
+			'Cookie': 'store',
 			'TweenMax': 'gsap/src/minified/TweenMax.min.js'
 		}),
 		new CopyWebpackPlugin(

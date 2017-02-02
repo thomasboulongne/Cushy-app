@@ -16,7 +16,7 @@ class Router extends VueRouter {
 		];
 
 		super({
-			mode: 'history',
+			mode: 'hash',
 			base: '/',
 			routes: routes
 		});
