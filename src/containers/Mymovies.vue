@@ -2,7 +2,7 @@
 	<div id="my-movies">
 		<div class="bg" :class="genres[0]" ref="bg"></div>
 		<div class="header" ref="header">
-			<div class="switch" @click="switchList()">
+			<div class="switch" ref="switch" @click="switchList()">
 				<svg :class="genres[0]" v-if="currentList == shows" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="movies-icon" viewBox="0 0 27 27">
 					<path d="M1.9,23.8h20.9V11.9H1.9V23.8z M5.2,5.4L3.7,7.9l-2,0.5l-0.5-2L5.2,5.4z M22.1,3.3l-3.9,1l1.5-2.5
 						c0,0,0,0,0,0l1.9-0.5L22.1,3.3z M15.8,9.1h3.6l-2,2c0,0,0,0,0,0h-3.6L15.8,9.1z M11.2,9.1h3.6l-2,2c0,0,0,0,0,0H9.1L11.2,9.1z
@@ -26,12 +26,14 @@
 					<path d="M23.9,15c0,0.8-0.6,1.4-1.4,1.4S21,15.8,21,15c0-0.8,0.6-1.4,1.4-1.4S23.9,14.2,23.9,15z"/>
 				</svg>
 			</div>
-			<h2>
-				{{ mood.title }}
-			</h2>
-			<h3>
-				{{ mood.subtitle }}
-			</h3>
+			<div class="mood" ref="mood">
+				<h2>
+					{{ mood.title }}
+				</h2>
+				<h3>
+					{{ mood.subtitle }}
+				</h3>
+			</div>
 		</div>
 		<ul v-if="currentList.length" ref="list" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)">
 			<li v-for="current in currentList">
@@ -435,13 +437,18 @@ export default {
 			for (let i = 0; i < this.slides.length; i++) {
 				const slide = this.slides[i];
 				if(i == this.paginationIndex) {
+					const detailsSlideWidth = window.innerWidth * .9;
+					const detailsSlideHeight = detailsSlideWidth * 9 / 16;
+					const detailsSlideMargin = (window.innerWidth - detailsSlideWidth) / 2;
+					const headerHeight = this.$refs.header.offsetHeight * 2;
+
 					this.detailsTl.to(slide.elt, .4, {
-						top: 0,
-						left: 0,
+						top: detailsSlideMargin,
+						left: detailsSlideMargin,
 						x: '0%',
 						y: '0%',
-						height: window.innerHeight * .3,
-						width: window.innerWidth,
+						height: detailsSlideHeight,
+						width: detailsSlideWidth,
 						borderRadius: 0
 					}, 0)
 					.set(slide.elt.childNodes[0], {
@@ -452,9 +459,12 @@ export default {
 						height: 0,
 						margin: 0
 					}, 0)
+					.to([this.$refs.mood, this.$refs.switch], .4, {
+						y: -headerHeight
+					}, 0)
 					.to(this.$refs.list, .4, {
 						flexGrow: 0,
-						height: window.innerHeight * .3
+						height: detailsSlideHeight + 2 * detailsSlideMargin
 					}, 0)
 					.fromTo(this.$refs.description, .4, {
 						flexGrow: 0
