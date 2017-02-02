@@ -57,8 +57,12 @@
 			<div class="overview" ref="overview">
 				{{ current.overview }}
 			</div>
-			<div class="authors" ref="authors">
+			<div class="crew" ref="crew">
 				<!-- {{ current.authors }} -->
+			</div>
+			<div class="cast" ref="cast">
+				<h4>With</h4>
+				<span v-for="character in current.cast">{{ character.name }}</span>
 			</div>
 		</div>
 		<div id="actions">
@@ -423,7 +427,26 @@ export default {
 						display: 'block',
 						opacity: 1,
 						y: 0
-					}, "-= 0.2");
+					}, "-= 0.2")
+					.fromTo(this.$refs.crew, .4,{
+						display: 'none',
+						opacity: 0,
+						y: window.innerHeight * .05
+					}, {
+						display: 'block',
+						opacity: 1,
+						y: 0
+					}, "-= 0.2")
+					.fromTo(this.$refs.cast, .4,{
+						display: 'none',
+						opacity: 0,
+						y: window.innerHeight * .05
+					}, {
+						display: 'block',
+						opacity: 1,
+						y: 0
+					}, "-= 0.2")
+					;
 				}
 				else {
 					this.detailsTl.to(slide.elt, .3, {
@@ -496,6 +519,7 @@ export default {
 			margin: $margin 0;
 			color: white;
 			position: relative;
+			flex-shrink: 0;
 
 			.switch {
 				position: absolute;
@@ -539,6 +563,7 @@ export default {
 			position: relative;
 			width: 100%;
 			flex-grow: 1;
+			flex-shrink: 0;
 			li {
 				position: absolute;
 				top: 50%;
@@ -562,6 +587,10 @@ export default {
 		#movie-description {
 			width: 100%;
 			text-align: center;
+			height: min-content;
+
+			overflow: scroll;
+
 			#movie-title, .overview {
 				display: inline-block;
 				flex-basis: 100%;
@@ -597,6 +626,22 @@ export default {
 				text-align: left;
 				line-height: 1.5em;
 			}
+
+			.cast, .crew {
+				text-align: left;
+				display: none;
+				margin: $margin;
+				h4 {
+					text-transform: uppercase;
+					color: $lighter-grey;
+				}
+
+				span:not(:last-child) {
+					&:after {
+						content: ', '
+					}
+				}
+			}
 		}
 
 		#actions {
@@ -605,6 +650,8 @@ export default {
 			width: 100%;
 			margin: #{$margin * 2} 0 $margin 0;
 			position: relative;
+			flex: none;
+
 			div {
 				position: relative;
 			}
