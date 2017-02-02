@@ -21,6 +21,13 @@ ul {
 	padding: 0;
 }
 
-svg.thriller * {
-	fill: $thriller;
+@each $key, $value in $genres {
+  .#{$key} svg {
+  	.stroke-colored {
+		stroke: $value !important;
+	}
+	.fill-colored {
+		fill: $value !important;
+	}
+  }
 }
