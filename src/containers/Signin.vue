@@ -2,9 +2,18 @@
 	<div id="sign-in">
 		<div class="overlay" ref="overlay">
 			<div class="logo" ref="wrapper">
-				<img class="logo" id="logo" ref="logo" src="/assets/Logo.svg" alt="">
+				<svg class="logo" id="logo" ref="logo" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 90 90" style="enable-background:new 0 0 90 90;" xml:space="preserve">
+					<path id="logo" style="fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;" class="st0" d="M88.4,69.2c0.8-4.2,1.2-13.9-3-34.1c-3.6-17.5-7.2-25.7-9.5-29.5c0-1.8,0.4-4.8-1.9-5.5
+						c-2.3-0.7-3.7,0.9-4.3,1.8C65.3,1.8,56.4,2.4,38,6.2C19,10.1,10,13.4,5.9,15.2c-1.4-0.7-4.4-1.4-5.6,0.7c-1.2,2.1,1.2,4.6,2.6,6.2
+						c0.5,5,1.9,14.4,5.2,30c4,19.3,6.8,28.1,8.2,31.9c-1.1,1.3-2.3,4,0,5.4c2.3,1.4,4.9,0,6.5-1.5c5,0.5,14.4,0.3,31.3-3.2
+						c17.7-3.6,26-7.2,29.9-9.6c1.8,0,3.5,1.8,5.1,0C90.8,73.4,89.7,70.4,88.4,69.2z M56.3,39.6c1.1,0,2.1,0.9,2.1,2c0,1.1-0.9,2-2.1,2
+						c-1.1,0-2.1-0.9-2.1-2C54.3,40.5,55.2,39.6,56.3,39.6z M46.4,42c1.1,0,2.1,0.9,2.1,2c0,1.1-0.9,2-2.1,2c-1.1,0-2.1-0.9-2.1-2
+						C44.3,42.9,45.2,42,46.4,42z M55.8,63.4c-9,2.3-15.8-1.7-18.1-4.8c-1.5-2-1.3-3.3-0.3-4.2c1-0.9,2.9-0.5,5,0.1
+						c3.4,1.1,5.8,1.6,11.3,0.5c5-1,7.4-2.3,11.3-6c1.7-1.6,3.6,0.4,3.6,2.5C68.7,54.8,64.8,61,55.8,63.4z"/>
+				</svg>
+
 				<div class="bubbles" ref="bubbles">
-					<img v-for="i in 16" :src="'/assets/bubbles/genre' + i + '.svg'" class="logo" alt="">
+					<img v-for="i in 16" :src="'/assets/bubbles/genre' + i + '.png'" class="logo" alt="">
 				</div>
 			</div>
 			<div class="wrapper">
@@ -44,7 +53,7 @@
 				</div>
 				<div ref="input" class="hidden input">
 					<form action="#" @submit="submit($event)">
-						<input type="text" class="button" ref="cushyInput"><input type="image" src="/assets/submit.svg" alt="" class="button">
+						<input type="text" class="button" ref="cushyInput"><input type="image" src="/assets/submit.png" alt="" class="button">
 					</form>
 				</div>
 			</div>
@@ -115,7 +124,7 @@ export default {
 			y: "-=" + window.innerHeight * 0.2
 		}, 0)
 		.to(this.bubbles[0], 1.5, {
-			x: "+=" + window.innerWidth * -0.23,
+			x: "+=" + window.innerWidth * -0.230,
 			y: "-=" + window.innerHeight * 0,
 			ease: Elastic.easeOut.config(1, 0.75)
 		}, 0).to(this.bubbles[1], 1.5, {
@@ -401,7 +410,7 @@ export default {
 	@import '../stylesheets/variables.scss';
 
 	#sign-in {
-		img.logo {
+		img.logo, svg.logo {
 			width: 100%;
 		}
 		
