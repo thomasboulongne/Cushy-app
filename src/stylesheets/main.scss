@@ -31,3 +31,15 @@ ul {
 	}
   }
 }
+
+.table {
+	display: table;
+	table-layout: fixed;
+	.tr {
+		display: table-row;
+		.td {
+			display: table-cell;
+			text-align: center;
+		}
+	}
+}
