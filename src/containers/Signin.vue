@@ -70,7 +70,8 @@ export default {
 
 	data() {
 		return {
-			currentSlide: 0
+			currentSlide: 0,
+			__PROD__: __PROD__
 		};
 	},
 
