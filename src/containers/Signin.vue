@@ -13,7 +13,7 @@
 				</svg>
 
 				<div class="bubbles" ref="bubbles">
-					<img v-for="i in 16" :src="'/assets/bubbles/genre' + i + '.png'" class="logo" alt="">
+					<img v-for="i in 16" :src="__PROD__ ? 'http://app.cushy.thomasboulongne.com/assets/bubbles/genre' + i + '.png' : '/assets/bubbles/genre' + i + '.png'" class="logo" alt="">
 				</div>
 			</div>
 			<div class="wrapper">
@@ -53,7 +53,7 @@
 				</div>
 				<div ref="input" class="hidden input">
 					<form action="#" @submit="submit($event)">
-						<input type="text" class="button" ref="cushyInput"><input type="image" src="/assets/submit.png" alt="" class="button">
+						<input type="text" class="button" ref="cushyInput"><input type="image" :src="__PROD__ ? 'http://app.cushy.thomasboulongne.com/assets/submit.svg' : '/assets/submit.svg'" alt="" class="button">
 					</form>
 				</div>
 			</div>
