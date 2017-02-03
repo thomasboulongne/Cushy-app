@@ -455,7 +455,8 @@ export default {
 				})
 				.staggerFromTo(this.$refs.rating.childNodes, 1.1, {
 					opacity: 0,
-					y: window.innerHeight * .06
+					y: window.innerHeight * .06,
+					overwrite: all
 				}, {
 					opacity: 1,
 					y: 0
@@ -1255,24 +1256,6 @@ export default {
 				transform: translate(-50%, -50%) scale(0);
 			}
 		}
-
-		 .overlay {
-		 	position: fixed;
-		 	z-index: 5;
-		 	top: 0;
-		 	left: 0;
-		 	bottom: 0;
-		 	right: 0;
-		 	// background: map-get($genres, action);
-		 	background-image: linear-gradient(160deg, #ffffff, rgba(0, 0, 0, 0.5)), linear-gradient(#f03e3e, #f03e3e);
-			.logo {
-				position: fixed;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				width: 33%;
-			}
-		 }
 
 	}
 </style>

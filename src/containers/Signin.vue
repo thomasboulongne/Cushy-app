@@ -1,20 +1,67 @@
 <template>
 	<div id="sign-in">
-		<form action="#" @submit="submit($event)">
-			<label for="cushy-id">Your Cushy ID</label>
-			<input type="text" name="cushy-id" id="cushy-id" ref="cushyInput">
-		</form>
+		<div class="overlay" ref="overlay">
+			<div class="logo" ref="wrapper">
+				<img class="logo" id="logo" ref="logo" src="/assets/Logo.svg" alt="">
+				<div class="bubbles" ref="bubbles">
+					<img v-for="i in 16" :src="'/assets/bubbles/genre' + i + '.svg'" class="logo" alt="">
+				</div>
+			</div>
+			<div class="wrapper">
+				<h1 ref="title">Cushy!</h1>
+				<div id="slider" ref="slider">
+					<div class="frame js_frame">
+						<ul class="slides js_slides">
+							<li class="js_slide">
+								<p>
+									Aren't you tired  of struggling every night  to find what movie to watch ?
+								</p>
+							</li>
+							<li class="js_slide">
+								<p>
+									Cushy has the solution !
+									He can feel your mood and get the perfect movie for you.
+								</p>
+							</li>
+							<li class="js_slide">
+								<p>
+									Squeeze, cuddle or punch him.
+									Express yourself and he will find the best movie for you !
+								</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="pager">
+					<span v-for="i in 3" :class="i == currentSlide + 1 ? 'selected':''"></span>
+				</div>
+			</div>
+			<div class="footer">
+				<span ref="cta">If you are ready to watch a movie</span>
+				<span ref="label" class="hidden">Enter your Cushy ID to connect</span>
+				<div ref="button" class="button" @click="button">
+					squeeze cushy!
+				</div>
+				<div ref="input" class="hidden input">
+					<form action="#" @submit="submit($event)">
+						<input type="text" class="button" ref="cushyInput"><input type="image" src="/assets/submit.svg" alt="" class="button">
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
 
 // import Emitter from '../core/Emitter';
+import {lory} from 'lory.js';
 
 export default {
 
 	data() {
 		return {
+			currentSlide: 0
 		};
 	},
 
@@ -22,15 +69,327 @@ export default {
 	},
 
 	mounted() {
+		this.$refs.slider.addEventListener('after.lory.slide', this.updateAnimation);
+
+		lory(this.$refs.slider, {enableMouseEvents: true});
+
+		this.bubbles = this.$refs.bubbles.childNodes;
+		this.tl1 = new TimelineLite({paused: true});
+		this.tl1.set(this.bubbles[0], {
+			scale: .1
+		}).set(this.bubbles[1], {
+			scale: .1
+		}).set(this.bubbles[2], {
+			scale: .1
+		}).set(this.bubbles[3], {
+			scale: .1
+		}).set(this.bubbles[4], {
+			scale: .1
+		}).set(this.bubbles[5], {
+			scale: .1
+		}).set(this.bubbles[6], {
+			scale: .1
+		}).set(this.bubbles[7], {
+			scale: .18
+		}).set(this.bubbles[8], {
+			scale: .18
+		}).set(this.bubbles[9], {
+			scale: .18
+		}).set(this.bubbles[10], {
+			scale: .18
+		}).set(this.bubbles[11], {
+			scale: .18
+		}).set(this.bubbles[12], {
+			scale: .32
+		}).set(this.bubbles[13], {
+			scale: .32
+		}).set(this.bubbles[14], {
+			scale: .32
+		}).set(this.bubbles[15], {
+			scale: .32
+		})
+		;
+
+
+		this.tl1.to(this.$refs.wrapper, 1.5, {
+			y: "-=" + window.innerHeight * 0.2
+		}, 0)
+		.to(this.bubbles[0], 1.5, {
+			x: "+=" + window.innerWidth * -0.23,
+			y: "-=" + window.innerHeight * 0,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[1], 1.5, {
+			x: "+=" + window.innerWidth * -0.4,
+			y: "-=" + window.innerHeight * 0.04,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[2], 1.5, {
+			x: "+=" + window.innerWidth * -0.28,
+			y: "-=" + window.innerHeight * 0.15,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[3], 1.5, {
+			x: "+=" + window.innerWidth * -0.21,
+			y: "-=" + window.innerHeight * 0.27,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[4], 1.5, {
+			x: "+=" + window.innerWidth * 0.2,
+			y: "-=" + window.innerHeight * 0.2,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[5], 1.5, {
+			x: "+=" + window.innerWidth * 0.3,
+			y: "-=" + window.innerHeight * 0.01,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[6], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0.08,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[7], 1.5, {
+			x: "+=" + window.innerWidth * -0.26,
+			y: "-=" + window.innerHeight * 0.1,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[8], 1.5, {
+			x: "+=" + window.innerWidth * -0.020,
+			y: "-=" + window.innerHeight * 0.26,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[9], 1.5, {
+			x: "+=" + window.innerWidth * 0.3,
+			y: "-=" + window.innerHeight * 0.18,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[10], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[11], 1.5, {
+			x: "+=" + window.innerWidth * 0.45,
+			y: "-=" + window.innerHeight * 0.18,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[12], 1.5, {
+			x: "+=" + window.innerWidth * -0.42,
+			y: "-=" + window.innerHeight * 0.22,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[13], 1.5, {
+			x: "+=" + window.innerWidth * -0.06,
+			y: "-=" + window.innerHeight * 0.18,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[14], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0.26,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0).to(this.bubbles[15], 1.5, {
+			x: "+=" + window.innerWidth * 0.28,
+			y: "-=" + window.innerHeight * 0.1,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		;
+
+		this.tl1.fromTo(this.$refs.title, .8, {
+			y: window.innerHeight * .07,
+			opacity: 0
+		}, {
+			y: 0,
+			opacity: 1
+		}, "-= .5").fromTo(this.$refs.slider, .6, {
+			y: window.innerHeight * .07,
+			opacity: 0
+		}, {
+			y: 0,
+			opacity: 1
+		}, "-= .5");
+
+
+
+
+
+		this.tl2 = new TimelineLite({paused: true});
+		this.tl2
+		.to(this.bubbles[0], 1.5, {
+			x: "+=" + window.innerWidth * -0.15,
+			scale: .5,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[1], 1.5, {
+			x: "+=" + window.innerWidth * -0.4,
+			y: "-=" + window.innerHeight * 0.04,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[2], 1.5, {
+			x: "+=" + window.innerWidth * -0.28,
+			y: "-=" + window.innerHeight * 0.15,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[3], 1.5, {
+			x: "+=" + window.innerWidth * -0.21,
+			y: "-=" + window.innerHeight * 0.27,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[4], 1.5, {
+			x: "+=" + window.innerWidth * 0.2,
+			y: "-=" + window.innerHeight * 0.2,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[5], 1.5, {
+			x: "+=" + window.innerWidth * 0.3,
+			y: "-=" + window.innerHeight * 0.01,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[6], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0.08,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+
+		.to(this.bubbles[7], 1.5, {
+			x: "+=" + -window.innerWidth * 0.2,
+			y: "-=" + window.innerHeight * 0.11,
+			scale: .65,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[8], 1.5, {
+			x: "+=" + window.innerWidth * -0.09,
+			y: "-=" + window.innerHeight * 0.26,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[9], 1.5, {
+			x: "+=" + window.innerWidth * 0.14,
+			y: "-=" + window.innerHeight * 0,
+			scale: 1.1,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[10], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[11], 1.5, {
+			x: "+=" + window.innerWidth * 0.45,
+			y: "-=" + window.innerHeight * 0.18,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+
+		.to(this.bubbles[12], 1.5, {
+			x: "+=" + window.innerWidth * -0.41,
+			y: "-=" + window.innerHeight * 0.22,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[13], 1.5, {
+			x: "+=" + window.innerWidth * 0.06,
+			y: "-=" + window.innerHeight * 0.1,
+			scale: .8,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[14], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0.26,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		.to(this.bubbles[15], 1.5, {
+			x: "+=" + window.innerWidth * 0.4,
+			y: "-=" + window.innerHeight * 0.1,
+			ease: Elastic.easeOut.config(1, 0.75)
+		}, 0)
+		;
+
+		this.tl2.fromTo(this.$refs.cta, .3, {
+			y: window.innerHeight * .07,
+			opacity: 0
+		}, {
+			y: 0,
+			opacity: 1
+		}, "-= .5").fromTo(this.$refs.button, .4, {
+			y: window.innerHeight * .07,
+			opacity: 0
+		}, {
+			y: 0,
+			opacity: 1
+		}, "-= .4");
+
+
+
+
+
+		this.tl3 = new TimelineLite({paused: true});
+		this.tl3
+		.to(this.bubbles[0], 1.5, {
+			x: "+=" + window.innerWidth * -0.45,
+			scale: .8,
+			ease: Power3.easeIn
+		}, 0)
+		.to(this.bubbles[7], 1.5, {
+			x: "+=" + -window.innerWidth * 0.3,
+			y: "-=" + window.innerHeight * 0.17,
+			scale: .9,
+			ease: Power3.easeIn
+		}, 0)
+		.to(this.bubbles[9], 1.5, {
+			x: "+=" + window.innerWidth * 0.45,
+			y: "-=" + window.innerHeight * .20,
+			scale: 1.5,
+			ease: Power3.easeIn
+		}, 0)
+		.to(this.bubbles[13], 1.5, {
+			x: "+=" + window.innerWidth * 0.06,
+			y: "-=" + window.innerHeight * 0.18,
+			scale: 1.2,
+			ease: Power3.easeIn
+		}, 0)
+		;
+
+		this.tl3.to(this.$refs.logo, .4, {
+			scale: 1.1,
+			rotation: -13
+			// ease: Power3.easeOut
+		}, 0)
+		.to(this.$refs.logo, 1.1, {
+			scale: 1,
+			rotation: 360,
+			ease: Power3.easeOut
+		}, ".4")
+		;
+
+		this.tl1.play();
 	},
 
 	methods: {
+		button() {
+			TweenLite.to([this.$refs.cta, this.$refs.button], .3, {
+				opacity: 0,
+				onComplete: () => {
+					TweenLite.set([this.$refs.cta, this.$refs.button], {
+						display: 'none',
+						onComplete: () => {
+							TweenLite.to([this.$refs.input, this.$refs.label], .30, {
+								display: 'block',
+								opacity: 1
+							});
+						}
+					});
+				}
+			});
+		},
+
 		submit(e) {
 			e.preventDefault();
 			Cookie.set('cushy-id', this.$refs.cushyInput.value);
 			this.$router.push('my-movies');
+		},
+
+		updateAnimation(e) {
+			if(this.currentSlide == 0 && e.detail.currentSlide == 1) {
+				this.tl2.play();
+			}
+			else if(this.currentSlide == 1 && e.detail.currentSlide == 0) {
+				this.tl2.reverse();
+			}
+			else if(this.currentSlide == 1 && e.detail.currentSlide == 2) {
+				this.tl3.play();
+			}
+			else if(this.currentSlide == 2 && e.detail.currentSlide == 1) {
+				this.tl3.reverse();
+			}
+			this.currentSlide = e.detail.currentSlide;
 		}
-	},
+	}, 
 
 	components: {
 	}
@@ -40,4 +399,149 @@ export default {
 
 <style lang="sass">
 	@import '../stylesheets/variables.scss';
+
+	#sign-in {
+		img.logo {
+			width: 100%;
+		}
+		
+		#logo {
+			z-index: 5;
+		}
+
+		.wrapper {
+			width: 100%;
+			position: absolute;
+			bottom: 20vh;
+			h1 {
+				margin: 0;
+				margin-left: $margin;
+				color: #ff8787;
+				text-transform: uppercase;
+				letter-spacing: .2em;
+			}
+		}
+
+		#slider {
+			width: 100%;
+		}
+
+		.frame {
+			/**
+			* (optional) wrapper width, specifies width of the slider frame.
+			*/
+			width: 100%;
+
+			position: relative;
+			font-size: 0;
+			line-height: 0;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+
+		.slides {
+			display: inline-block;
+		}
+
+		ul {
+			width: 100%;
+		}
+
+		li {
+			position: relative;
+			display: inline-block;
+			box-sizing: border-box;
+			padding: $margin;
+			padding-bottom: $margin;
+			color: white;
+			white-space: normal;
+			vertical-align: top;
+			width: 100%;
+
+			p {
+				vertical-align: top;
+				margin: 0;
+				font-size: 1rem;
+				line-height: 1.5em;
+			}
+		}
+
+		.pager {
+			margin: 0 $margin;
+			span {
+				display: inline-block;
+				width: 3vw;
+				height: 3vw;
+				margin: 0 0.5vw;
+				box-sizing: border-box;
+				transition: all 0.2s;
+				border-radius: 50%;
+				background: #ff8787;
+				transform: scale(0.6);
+				&.selected {
+					position: relative;
+					background: white;
+					transform: scale(1);
+				}
+			}
+		}
+
+		.footer {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 20vh;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+
+			span {
+				color: #ff8787;
+				font-size: .85rem;
+			}
+
+			.button {
+				text-transform: uppercase;
+				padding: $margin/1.5 $margin*1.5;
+				margin-top: $margin/2;
+				background: white;
+				border-radius: 0.5em;
+				font-size: 1rem;
+				letter-spacing: 0.15em;
+				color: #e61d1e;
+				box-shadow: 0 0.3em 0 0 #c92a2a;
+			}
+
+			.input {
+				form {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					margin-top: $margin/2;
+				}
+
+				input[type=text] {
+					border: none;
+					max-width: 30vw;
+					margin: 0;
+					margin-right: $margin/2;
+				}
+		
+				input[type=image] {
+					display: inline-block;
+					margin: 0;
+					height: 2.9em;
+					padding: 0;
+					background: transparent;
+				}
+			}
+
+			.hidden {
+				display: none;
+				opacity: 0;
+			}
+		}
+	}
 </style>

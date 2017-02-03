@@ -103,7 +103,7 @@ module.exports = {
 			'Vue': 'vue',
 			'THREE': 'three',
 			'Cookie': 'store',
-			'TweenMax': 'gsap/src/minified/TweenMax.min.js'
+			'Tween': 'gsap/src/minified/TweenMax.min.js'
 		}),
 		new CopyWebpackPlugin(
 			[
