@@ -43,14 +43,14 @@
 		<div v-if="current" id="movie-description" ref="description" @touchstart="onDetailsTouchStart($event)" @touchmove="onDetailsTouchMove($event)" @touchend="onDetailsTouchEnd($event)">
 			<h2 id="movie-title" ref="title">{{ current.title }}</h2>
 			<div class="line">
-				<div class="rating">
+				<div class="rating" ref="rating">
 					<span v-for="rate in current.customRating">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.09 57.15">
 							<polygon :class="rate == 'starred' ? 'fill-colored':''" points="30.04 0 37.13 21.83 60.09 21.83 41.52 35.32 48.61 57.15 30.04 43.66 11.47 57.15 18.57 35.32 0 21.83 22.95 21.83 30.04 0"/>
 						</svg>
 					</span>
 				</div>
-				<div class="time">
+				<div class="time" ref="time">
 					<span v-if="current.hours">{{ current.hours }}h{{ current.minutes }}</span>
 					<span v-else>{{ current.minutes }} minutes</span>
 				</div>
@@ -349,9 +349,12 @@
 					<circle fill="#E5E5E5" cx="19" cy="19" r="19"></circle>
 					<path d="M19.3575317,19 L24.9259556,13.4315761 C25.0247489,13.3328839 25.0247489,13.1728125 24.9259556,13.0740191 C24.8273645,12.975327 24.6671919,12.975327 24.5684997,13.0740191 L19.0000758,18.6425442 L13.4315508,13.0740191 C13.3328586,12.975327 13.1726861,12.975327 13.074095,13.0740191 C12.9753017,13.1728125 12.9753017,13.3328839 13.074095,13.4315761 L18.64262,19 L13.074095,24.568525 C12.9753017,24.6672172 12.9753017,24.8272887 13.074095,24.9259809 C13.1234411,24.975327 13.1881573,25 13.2527723,25 C13.3174885,25 13.3822047,24.975327 13.4315508,24.9259809 L19.0000758,19.3574558 L24.5684997,24.9259809 C24.6178458,24.975327 24.682562,25 24.7472782,25 C24.8118933,25 24.8767106,24.975327 24.9259556,24.9259809 C25.0247489,24.8272887 25.0247489,24.6672172 24.9259556,24.568525 L19.3575317,19 Z" stroke="#D9D9D9" stroke-width="1.5" fill="#D9D9D9"></path>
 				</svg>
-				<svg @click="like()" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<svg @click="like()" v-if="current" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 					<circle fill="#E5E5E5" cx="37.5" cy="37.5" r="37.5"></circle>
-					<path d="M52.6066451,26.7460554 C50.7852003,24.9752168 48.4070867,24 45.9087356,24 C43.2170915,24 40.6163864,25.1647049 38.7732532,27.1961847 L37.3452435,28.7722082 L35.9153313,27.1954237 C34.0725786,25.1647049 31.4722541,24 28.7798489,24 C26.2818784,24 23.9030037,24.9752168 22.0804174,26.7464359 C18.1483492,30.5750086 17.9546757,37.0042864 21.6489325,41.0782804 C21.659206,41.0896953 21.6698599,41.1014908 21.6808944,41.1125252 L36.3395868,56.2605384 C36.6158285,56.545912 36.9773018,56.6878378 37.338014,56.6878378 C37.6991068,56.6878378 38.0605801,56.5455315 38.3360608,56.2609189 L53.0054072,41.1125252 C53.0160611,41.1014908 53.0267151,41.0896953 53.037369,41.0782804 C56.7323869,37.0065694 56.5390938,30.5776721 52.6066451,26.7460554 Z" fill="transparent" class="stroke-colored" stroke-width="2"></path>
+					<path d="M52.6066451,26.7460554 C50.7852003,24.9752168 48.4070867,24 45.9087356,24 C43.2170915,24 40.6163864,25.1647049 38.7732532,27.1961847 L37.3452435,28.7722082 L35.9153313,27.1954237 C34.0725786,25.1647049 31.4722541,24 28.7798489,24 C26.2818784,24 23.9030037,24.9752168 22.0804174,26.7464359 C18.1483492,30.5750086 17.9546757,37.0042864 21.6489325,41.0782804 C21.659206,41.0896953 21.6698599,41.1014908 21.6808944,41.1125252 L36.3395868,56.2605384 C36.6158285,56.545912 36.9773018,56.6878378 37.338014,56.6878378 C37.6991068,56.6878378 38.0605801,56.5455315 38.3360608,56.2609189 L53.0054072,41.1125252 C53.0160611,41.1014908 53.0267151,41.0896953 53.037369,41.0782804 C56.7323869,37.0065694 56.5390938,30.5776721 52.6066451,26.7460554 Z" fill="transparent" :class="['stroke-colored']" stroke-width="2"></path>
+				</svg>
+				<svg @click="like()" v-if="current" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ref="liked" class="like-copy">
+					<path d="M52.6066451,26.7460554 C50.7852003,24.9752168 48.4070867,24 45.9087356,24 C43.2170915,24 40.6163864,25.1647049 38.7732532,27.1961847 L37.3452435,28.7722082 L35.9153313,27.1954237 C34.0725786,25.1647049 31.4722541,24 28.7798489,24 C26.2818784,24 23.9030037,24.9752168 22.0804174,26.7464359 C18.1483492,30.5750086 17.9546757,37.0042864 21.6489325,41.0782804 C21.659206,41.0896953 21.6698599,41.1014908 21.6808944,41.1125252 L36.3395868,56.2605384 C36.6158285,56.545912 36.9773018,56.6878378 37.338014,56.6878378 C37.6991068,56.6878378 38.0605801,56.5455315 38.3360608,56.2609189 L53.0054072,41.1125252 C53.0160611,41.1014908 53.0267151,41.0896953 53.037369,41.0782804 C56.7323869,37.0065694 56.5390938,30.5776721 52.6066451,26.7460554 Z" :class="['stroke-colored', 'fill-colored']" stroke-width="2"></path>
 				</svg>
 			</div>
 			<div>
@@ -399,7 +402,8 @@ export default {
 				subtitle: ""
 			},
 			details: false,
-			switched: false
+			switched: false,
+			fav: false
 		};
 	},
 
@@ -426,17 +430,58 @@ export default {
 			});
 		},
 
-		current: function() {
+		current: function(newVal) {
 			if(this.$refs.title){
-				TweenLite.fromTo(this.$refs.title, .3, {
+				let tl = new TimelineLite({paused:true});
+				tl.fromTo(this.$refs.title, .5, {
 					opacity: 0,
 					y: window.innerWidth * .03
 				}, {
 					opacity: 1,
 					y: 0
-				});
+				})
+				.staggerFromTo(this.$refs.rating.childNodes, 1.1, {
+					opacity: 0,
+					y: window.innerHeight * .06
+				}, {
+					opacity: 1,
+					y: 0
+				}, .15)
+				.fromTo(this.$refs.time, .3, {
+					opacity: 0,
+					y: window.innerWidth * .03
+				}, {
+					opacity: 1,
+					y: 0
+				}, 1)
+				;
+				tl.play();
 			}
-			console.log(this.current);
+			this.fav = newVal.fav;
+		},
+
+		fav: function(val) {
+			if(this.$refs.liked) {
+				if(!this.likeTl) {
+					this.likeTl = new TimelineLite({paused: true});
+					this.likeTl.to(this.$refs.liked, 1, {
+						scale: 1,
+						ease: Elastic.easeOut.config(1, 0.4),
+						onComplete: () => {
+							this.likeTl.timeScale(2);
+						},
+						onReverseComplete: () => {
+							this.likeTl.timeScale(1);
+						}
+					});
+				}
+				if(val) {
+					this.likeTl.play();
+				}
+				else {
+					this.likeTl.reverse();
+				}
+			}
 		}
 	},
 
@@ -521,7 +566,7 @@ export default {
 								resolve();
 							}
 						});
-						this.slidesOrder.push(elt.getAttribute('data-id'))
+						this.slidesOrder.push(elt.getAttribute('data-id'));
 					}
 				}));
 
@@ -661,12 +706,28 @@ export default {
 
 		switchList() {
 			this.switched = true;
-			if(this.currentList == this.movies)
-				this.currentList = this.shows;
-			else
-				this.currentList = this.movies;
+			let tl = new TimelineLite({paused: true});
+			tl.to(this.$refs.switch, .2, {
+				rotation: -30,
+				scale: 1.1,
+				onComplete: () => {
+					if(this.currentList == this.movies)
+						this.currentList = this.shows;
+					else
+						this.currentList = this.movies;
 
-			this.pagination = 1;
+					this.pagination = 1;
+				}
+			})
+			.to(this.$refs.switch, .8, {
+				rotation: 360,
+				scale: 1,
+				ease: Elastic.easeOut.config(1, 0.75)
+			})
+			.set(this.$refs.switch, {
+				rotation: 0
+			});
+			tl.play();
 		},
 
 		discard(id) {
@@ -698,6 +759,11 @@ export default {
 				}
 			}, '+=.4');
 			tl.play();
+		},
+
+		like() {
+			this.current.fav = this.current.fav ? !this.current.fav : true;
+			this.fav = this.current.fav;
 		},
 
 		play() {
@@ -1167,6 +1233,13 @@ export default {
 
 			svg {
 				width: 15vw;
+			}
+
+			.like-copy {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%) scale(0);
 			}
 		}
 
