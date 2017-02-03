@@ -453,20 +453,20 @@ export default {
 					opacity: 1,
 					y: 0
 				})
-				.staggerFromTo(this.$refs.rating.childNodes, 1.1, {
+				.staggerFromTo(this.$refs.rating.childNodes, .6, {
 					opacity: 0,
 					y: window.innerHeight * .06,
-					overwrite: all
+					overwrite: 'all'
 				}, {
 					opacity: 1,
 					y: 0
 				}, .15)
 				.fromTo(this.$refs.time, .3, {
 					opacity: 0,
-					y: window.innerWidth * .03
+					x: window.innerWidth * .03
 				}, {
 					opacity: 1,
-					y: 0
+					x: 0
 				}, 1)
 				;
 				tl.play();

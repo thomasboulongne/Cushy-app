@@ -16,6 +16,8 @@ export default {
 	},
 
 	created() {
+		if(__PROD__)
+			localStorage.clear();
 		if(Cookie.get('cushy-id')) {
 			this.id = Cookie.get('cushy-id');
 			this.$router.push('my-movies');
