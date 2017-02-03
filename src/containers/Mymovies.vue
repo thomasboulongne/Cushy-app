@@ -367,6 +367,7 @@
 		</div>
 
 		<div class="overlay" v-show="overlay" ref="overlay">
+			<img class="logo" ref="logo" src="/assets/Logo.svg" alt="">
 		</div>
 	</div>
 </template>
@@ -419,12 +420,24 @@ export default {
 
 	watch: {
 		currentList: function() {
-			TweenLite.to(this.$refs.overlay, .6, {
+			let tl = new TimelineLite({paused: true});
+			tl.to(this.$refs.logo, .2, {
+				rotation: -10,
+				scale: 1.2,
+				ease: Power3.easeOut
+			})
+			.to(this.$refs.logo, .6, {
+				rotation: 10,
+				scale: 0,
+				ease: Power3.easeIn
+			})
+			.to(this.$refs.overlay, .9, {
 				opacity: 0,
 				onComplete: () => {
 					this.overlay = false;
 				}
 			});
+			tl.play();
 			this.$nextTick( () => {
 				this.initSlides();
 			});
@@ -1250,7 +1263,15 @@ export default {
 		 	left: 0;
 		 	bottom: 0;
 		 	right: 0;
-		 	background: map-get($genres, action);
+		 	// background: map-get($genres, action);
+		 	background-image: linear-gradient(160deg, #ffffff, rgba(0, 0, 0, 0.5)), linear-gradient(#f03e3e, #f03e3e);
+			.logo {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 33%;
+			}
 		 }
 
 	}
